@@ -1,0 +1,29 @@
+{
+  "name": "cape_id",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node capeid/src/server.js",
+    "dev": "nodemon capeid/src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AvelileM/Cape_ID.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AvelileM/Cape_ID/issues"
+  },
+  "homepage": "https://github.com/AvelileM/Cape_ID#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "multer": "^2.0.2"
+  }
+}
