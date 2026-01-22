@@ -1,0 +1,24 @@
+<!-- capeid/public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CapeID MVP</title>
+</head>
+<body>
+  <h1>Welcome to CapeID</h1>
+  <p>Use the API endpoints to register or verify an ID.</p>
+
+  <h2>Register ID (Upload)</h2>
+  <form action="/api/register-id" method="POST" enctype="multipart/form-data">
+    <input type="file" name="id" />
+    <button type="submit">Upload</button>
+  </form>
+
+  <h2>Verify ID (Upload)</h2>
+  <form action="/api/verify-id" method="POST" enctype="multipart/form-data">
+    <input type="file" name="id" />
+    <button type="submit">Verify</button>
+  </form>
+</body>
+</html>
