@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CapeID – Identity Verification Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+  <h1>🔐 CapeID – Identity Verification Demo</h1>
+  <p>Privacy-preserving ID verification for Cape Town institutions.</p>
+
+  <hr />
+
+  <h2>1️⃣ Register ID</h2>
+  <input type="file" id="registerFile" />
+  <br /><br />
+  <button onclick="registerID()">Register ID</button>
+
+  <pre id="registerResult"></pre>
+
+  <hr />
+
+  <h2>2️⃣ Verify ID</h2>
+  <input type="file" id="verifyFile" />
+  <br /><br />
+  <button onclick="verifyID()">Verify ID</button>
+
+  <pre id="verifyResult"></pre>
+
+  <script>
+    async function registerID() {
+      const fileInput = document.getElementById("registerFile");
+      const resultBox = document.getElementById("registerResult");
+
+      if (!fileInput.files.length) {
+        alert("Please select a file");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("id", fileInput.files[0]);
+
+      try {
+        const response = await fetch("/upload-id", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+        resultBox.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultBox.textContent = "Error uploading ID";
+      }
+    }
+
+    async function verifyID() {
+      const fileInput = document.getElementById("verifyFile");
+      const resultBox = document.getElementById("verifyResult");
+
+      if (!fileInput.files.length) {
+        alert("Please select a file");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("id", fileInput.files[0]);
+
+      try {
+        const response = await fetch("/verify-id", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+        resultBox.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultBox.textContent = "Error verifying ID";
+      }
+    }
+  </script>
+</body>
+</html>

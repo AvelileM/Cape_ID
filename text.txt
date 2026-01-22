@@ -1,0 +1,46 @@
+W3NodeHackathon
+
+
+capeid/
+├── src/                 # BACKEND (CORE)
+│   └── ...
+├── public/              # FRONTEND (DEMO ONLY)
+│   └── index.html
+├── README.md
+
+
+
+
+
+server.js
+import app from "./app.js";
+
+const PORT = 3000;
+
+app.listen(PORT, () => {
+  console.log(`CapeID running at http://localhost:${PORT}`);
+});
+
+
+
+
+
+app.js
+import express from "express";
+import path from "path";
+
+const app = express();
+
+// Serve frontend
+app.use(express.static(path.join(process.cwd(), "public")));
+
+// Routes
+import uploadRoute from "./routes/upload.js";
+import verifyRoute from "./routes/verify.js";
+
+app.use(uploadRoute);
+app.use(verifyRoute);
+
+export default app;
+
+
