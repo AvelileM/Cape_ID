@@ -1,83 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>CapeID – Identity Verification Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CapeID - Privacy-First ID Verification</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 50%, #FAF5FF 100%);
+  min-height: 100vh;
+  padding: 0;
+}
+
+header {
+  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: left;
+  margin-right: 40rem;
+}
+
+h1 {
+  font-size: 3rem;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+h1 span {
+  margin-right: 56rem;
+  font-size: 3.5rem
+}
+
+
+
+.subtitle {
+  color: #6B7280;
+  font-size: 1.25rem;
+  margin-top: 0.5rem;
+  margin-left: -2rem;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+
+.info-banner {
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.info-banner h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-banner ul {
+  list-style: none;
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.info-banner li {
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.info-banner li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+  font-size: 1.75rem;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+
+
+.file-input-wrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 1rem;
+  border: 2px dashed #D1D5DB;
+  border-radius: 8px;
+  background: #F9FAFB;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+input[type="file"]:hover {
+  border-color: #9CA3AF;
+  background: #F3F4F6;
+}
+
+input[type="file"]:focus {
+  outline: none;
+  border-color: #3B82F6;
+  background: white;
+}
+
+button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#registerBtn {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.4);
+}
+
+#registerBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.5);
+}
+
+#verifyBtn {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.4);
+}
+
+#verifyBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.5);
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.result {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 2px solid #A7F3D0;
+}
+
+.error {
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  border: 2px solid #FECACA;
+}
+
+.warning {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border: 2px solid #FDE68A;
+}
+
+.result strong {
+  font-size: 1.25rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.success strong {
+  color: #065F46;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.success strong::before {
+  content: "✓";
+  background: #10B981;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.error strong {
+  color: #991B1B;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error strong::before {
+  content: "✕";
+  background: #EF4444;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.warning strong {
+  color: #92400E;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.warning strong::before {
+  content: "⚠";
+  background: #F59E0B;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.detail-box {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6B7280;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.mono {
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: #374151;
+  word-break: break-all;
+  line-height: 1.6;
+  background: #F9FAFB;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #E5E7EB;
+}
+
+.timestamp {
+  color: #4B5563;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+
+
+footer {
+  background: white;
+  border-top: 1px solid #E5E7EB;
+  padding: 2rem;
+  text-align: center;
+  color: #6B7280;
+  margin-top: 4rem;
+}
+
+footer p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+  }
+  
+  main {
+    padding: 0 1rem 2rem;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    right: 55%;
+  }
+}
+</style>
 </head>
 
 <body>
-  <h1>CapeID – Identity Verification Demo</h1>
-  <p>Privacy-preserving ID verification for Cape Town institutions.</p>
 
-  <hr />
+<header>
+  <h1><span> 🛡️ CapeID</span></h1>
+  <p class="subtitle">Privacy-first decentralized identity verification for Cape Town institutions</p>
+</header>
 
-  <h2>1️⃣ Register ID</h2>
-  <input type="file" id="registerFile" />
-  <br /><br />
-  <button onclick="registerID()">Register ID</button>
+<main>
+  <div class="info-banner">
+    <h3>How CapeID Works</h3>
+    <p>CapeID verifies that an ID document has been seen before <strong>without storing your actual ID</strong>. We use cryptographic hashing to create a unique fingerprint of your document.</p>
+    <ul>
+      <li>Your ID is never stored permanently</li>
+      <li>Only a mathematical hash is recorded on the ledger</li>
+      <li>Perfect for institutions verifying document integrity</li>
+    </ul>
+  </div>
 
-  <pre id="registerResult"></pre>
+  <div class="cards-container">
+    <div class="card card-register">
+      <h2>Register ID</h2>
+      <div class="file-input-wrapper">
+        <input type="file" id="registerFile" accept="image/*,.pdf" />
+      </div>
+      <button id="registerBtn">Register Document</button>
+      <div id="registerResult"></div>
+    </div>
 
-  <hr />
+    <div class="card card-verify">
+      <h2>Verify ID</h2>
+      <div class="file-input-wrapper">
+        <input type="file" id="verifyFile" accept="image/*,.pdf" />
+      </div>
+      <button id="verifyBtn">Verify Document</button>
+      <div id="verifyResult"></div>
+    </div>
+  </div>
+</main>
 
-  <h2>2️⃣ Verify ID</h2>
-  <input type="file" id="verifyFile" />
-  <br /><br />
-  <button onclick="verifyID()">Verify ID</button>
+<footer>
+  <p><strong>Built for Cape Town institutions</strong></p>
+  <p>Privacy-preserving • Decentralized • Secure</p>
+  <p>Your documents are never stored. Only cryptographic hashes are recorded.</p>
+</footer>
 
-  <pre id="verifyResult"></pre>
+<script>
+/* ---------- SAFE BOOT ---------- */
+document.addEventListener("DOMContentLoaded", () => {
 
-  <script>
-    async function registerID() {
-      const fileInput = document.getElementById("registerFile");
-      const resultBox = document.getElementById("registerResult");
+  const registerBtn = document.getElementById("registerBtn");
+  const verifyBtn = document.getElementById("verifyBtn");
 
-      if (!fileInput.files.length) {
-        alert("Please select a file");
-        return;
+  registerBtn.onclick = async () => {
+    const file = document.getElementById("registerFile").files[0];
+    if (!file) return show("registerResult", "error", "Please select a file");
+
+    registerBtn.disabled = true;
+    registerBtn.innerHTML = '<div class="spinner"></div> Registering...';
+
+    const fd = new FormData();
+    fd.append("id", file);
+
+    try {
+      const res = await fetch("/api/register-id", { method: "POST", body: fd });
+      const data = await res.json();
+
+      if (res.ok) {
+        show(
+          "registerResult",
+          "success",
+          "ID Registered Successfully!",
+          data.hash,
+          data.timestamp
+        );
+      } else {
+        show("registerResult", "error", data.error || "Registration failed");
       }
+    } catch {
+      show("registerResult", "error", "Network error. Is the backend running on localhost:3000?");
+    } finally {
+      registerBtn.disabled = false;
+      registerBtn.innerHTML = 'Register Document';
+    }
+  };
 
-      const formData = new FormData();
-      formData.append("id", fileInput.files[0]);
+  verifyBtn.onclick = async () => {
+    const file = document.getElementById("verifyFile").files[0];
+    if (!file) return show("verifyResult", "error", "Please select a file");
 
-      try {
-        const response = await fetch("/upload-id", {
-          method: "POST",
-          body: formData
-        });
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML = '<div class="spinner"></div> Verifying...';
 
-        const data = await response.json();
-        resultBox.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        resultBox.textContent = "Error uploading ID";
+    const fd = new FormData();
+    fd.append("id", file);
+
+    try {
+      const res = await fetch("/api/verify-id", { method: "POST", body: fd });
+      const data = await res.json();
+
+      if (res.ok) {
+        if (data.verified) {
+          show(
+            "verifyResult",
+            "success",
+            "ID Verified",
+            data.hash,
+            data.timestamp
+          );
+        } else {
+          show("verifyResult", "warning", "ID Not Found in Ledger", data.hash);
+        }
+      } else {
+        show("verifyResult", "error", data.error || "Verification failed");
       }
+    } catch {
+      show("verifyResult", "error", "Network error. Is the backend running on localhost:3000?");
+    } finally {
+      verifyBtn.disabled = false;
+      verifyBtn.innerHTML = 'Verify Document';
+    }
+  };
+
+  function show(el, type, title, hash = "", timestamp = "") {
+    let content = `
+      <div class="result ${type}">
+        <strong>${title}</strong>
+    `;
+
+    if (hash) {
+      content += `
+        <div class="detail-box">
+          <div class="detail-label">Document Hash</div>
+          <div class="mono">${hash}</div>
+        </div>
+      `;
     }
 
-    async function verifyID() {
-      const fileInput = document.getElementById("verifyFile");
-      const resultBox = document.getElementById("verifyResult");
-
-      if (!fileInput.files.length) {
-        alert("Please select a file");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("id", fileInput.files[0]);
-
-      try {
-        const response = await fetch("/verify-id", {
-          method: "POST",
-          body: formData
-        });
-
-        const data = await response.json();
-        resultBox.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        resultBox.textContent = "Error verifying ID";
-      }
+    if (timestamp) {
+      content += `
+        <div class="detail-box">
+          <div class="detail-label">Timestamp</div>
+          <div class="timestamp">${new Date(timestamp).toLocaleString()}</div>
+        </div>
+      `;
     }
-  </script>
+
+    content += '</div>';
+    
+    document.getElementById(el).innerHTML = content;
+  }
+
+});
+</script>
+
 </body>
 </html>

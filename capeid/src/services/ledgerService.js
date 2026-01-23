@@ -1,23 +1,33 @@
+// src/services/ledgerService.js
 
-// ledgerService.js
-import fs from "fs";
-import path from "path";
+// Ledger stores objects now: { hash, timestamp }
+const ledger = [];
 
-const ledgerPath = path.join(process.cwd(), "src/storage/ledger.json");
-
-// Add a hash to the ledger
-export function addToLedger(hash, filename) {
-  const ledger = JSON.parse(fs.readFileSync(ledgerPath, "utf-8"));
-  ledger.push({
+/**
+ * Add a hash to the ledger with a timestamp
+ * @param {string} hash
+ */
+export function addToLedger(hash) {
+  const entry = {
     hash,
-    filename,
-    timestamp: new Date().toISOString(),
-  });
-  fs.writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2));
+    timestamp: new Date().toISOString(), // ISO timestamp
+  };
+  ledger.push(entry);
+  return entry; // return the entry for convenience
 }
 
-// Check if hash exists in the ledger
+/**
+ * Check if a hash exists in the ledger and return the entry
+ * @param {string} hash
+ * @returns {object|null} - { hash, timestamp } or null
+ */
 export function checkLedger(hash) {
-  const ledger = JSON.parse(fs.readFileSync(ledgerPath, "utf-8"));
-  return ledger.some((entry) => entry.hash === hash);
+  return ledger.find((entry) => entry.hash === hash) || null;
+}
+
+/**
+ * Optional: Get all ledger entries
+ */
+export function getLedger() {
+  return ledger;
 }

@@ -1,4 +1,3 @@
-// hashService.js
 import fs from "fs";
 import crypto from "crypto";
 
@@ -9,6 +8,6 @@ export async function hashFile(filePath) {
 
     stream.on("data", (data) => hash.update(data));
     stream.on("end", () => resolve(hash.digest("hex")));
-    stream.on("error", (err) => reject(err));
+    stream.on("error", reject);
   });
 }

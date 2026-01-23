@@ -1,3 +1,6 @@
+<<<<<<< Updated upstream
+# Cape_ID
+=======
 # 🔐 CapeID – Decentralized Identity Verification API
 
 CapeID is a privacy-preserving identity verification system designed for Cape Town institutions such as clinics, NGOs, and schools.  
@@ -80,4 +83,4 @@ This makes CapeID privacy-first and realistic for an MVP.
 ---
 
 ## 🧱 Architecture (MVP)
-
+>>>>>>> Stashed changes
