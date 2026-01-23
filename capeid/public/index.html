@@ -17,7 +17,8 @@ body {
   background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 50%, #FAF5FF 100%);
   min-height: 100vh;
   padding: 0;
-  padding-bottom: 70px; /* Prevent footer overlap */
+  display: flex;
+  flex-direction: column;
 }
 
 header {
@@ -58,6 +59,9 @@ main {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem 4rem;
+  flex: 1 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .info-banner {
@@ -354,9 +358,10 @@ footer {
   text-align: center;
   color: #6B7280;
   font-size: 1rem;
-  position: relative;
   width: 100%;
-  margin-top: 2rem;
+  flex-shrink: 0;
+  position: relative;
+  margin: 0;
 }
 
 footer p {
