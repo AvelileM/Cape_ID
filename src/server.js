@@ -6,7 +6,7 @@ let port = process.env.PORT ? parseInt(process.env.PORT) : DEFAULT_PORT;
 
 function startServer(portToTry) {
   const server = app.listen(portToTry, () => {
-    console.log(`Ubuntu_ID running at http://localhost:${portToTry}`);
+    console.log(`Ubuntu_ID running  on port ${portToTry}`);
   });
   server.on('error', err => {
     if (err.code === 'EADDRINUSE') {
