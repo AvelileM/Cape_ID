@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ubuntu-ID Verification</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Ubuntu-ID Verification</h1>
+
+    <form id="verificationForm">
+      <label>ID Document:</label>
+      <input type="file" id="idDocument" accept="image/*" required />
+
+      <label>Selfie:</label>
+      <video id="video" autoplay></video>
+      <button type="button" id="captureBtn">Capture Selfie</button>
+
+      <canvas id="canvas" style="display:none;"></canvas>
+
+      <button type="submit">Verify Identity</button>
+    </form>
+
+    <div id="status"></div>
+  </div>
+
+  <script src="/js/verification.js"></script>
+</body>
+</html>

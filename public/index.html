@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ubuntu_ID - Fast Verification</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.container {
+  max-width: 500px;
+  width: 100%;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+.content {
+  padding: 2rem;
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  transition: all 0.3s;
+}
+
+.step-dot.active {
+  background: #667eea;
+  width: 32px;
+  border-radius: 6px;
+}
+
+.step-dot.completed {
+  background: #10b981;
+}
+
+.step-content {
+  display: none;
+  animation: fadeIn 0.3s;
+}
+
+.step-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.upload-area {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #f9fafb;
+}
+
+.upload-area:hover {
+  border-color: #667eea;
+  background: #f3f4f6;
+}
+
+.upload-area.dragover {
+  border-color: #667eea;
+  background: #eef2ff;
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.webcam-container {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 4/3;
+}
+
+#webcam {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.face-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 250px;
+  border: 3px solid #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+.verification-status {
+  text-align: center;
+  padding: 2rem;
+}
+
+.status-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: scaleIn 0.5s;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+.spinner {
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.btn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+.info-text {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.success-text {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.error-text {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.hidden {
+  display: none;
+}
+
+.verification-details {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.detail-value {
+  font-weight: 600;
+  color: #111827;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+canvas {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🛡️ Ubuntu_ID</h1>
+    <p>Fast verification in seconds</p>
+  </div>
+
+  <div class="content">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step-dot active" data-step="1"></div>
+      <div class="step-dot" data-step="2"></div>
+      <div class="step-dot" data-step="3"></div>
+      <div class="step-dot" data-step="4"></div>
+    </div>
+
+    <!-- Step 1: Upload ID -->
+    <div class="step-content active" id="step1">
+      <h2 style="margin-bottom: 1rem; text-align: center;">Upload Your SA ID</h2>
+      <label for="idUpload">
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">📄</div>
+          <p style="font-weight: 600; margin-bottom: 0.5rem;">Click to upload or drag & drop</p>
+          <p style="color: #6b7280; font-size: 0.85rem;">Supports: JPG, PNG, PDF</p>
+          <p id="fileName" style="color: #667eea; font-weight: 600; margin-top: 1rem;" class="hidden"></p>
+        </div>
+      </label>
+      <input type="file" id="idUpload" accept="image/*,.pdf">
+      <button class="btn btn-primary" id="uploadBtn" disabled>Continue</button>
+    </div>
+
+    <!-- Step 2: Processing ID -->
+    <div class="step-content" id="step2">
+      <div class="verification-status">
+        <div class="spinner"></div>
+        <h3>Verifying with Home Affairs</h3>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <p class="info-text" id="processingText">Extracting ID information...</p>
+      </div>
+    </div>
+
+    <!-- Step 3: Face Capture -->
+    <div class="step-content" id="step3">
+      <h2 style="margin-bottom: 1rem; text-align: center;">Face Verification</h2>
+      <div class="webcam-container">
+        <video id="webcam" autoplay playsinline></video>
+        <div class="face-overlay"></div>
+      </div>
+      <canvas id="canvas"></canvas>
+      <p class="info-text">Position your face in the oval</p>
+      <button class="btn btn-primary" id="captureBtn">Capture Photo</button>
+    </div>
+
+    <!-- Step 4: Final Verification -->
+    <div class="step-content" id="step4">
+      <div class="verification-status">
+        <div class="status-icon" id="statusIcon">⏳</div>
+        <h3 id="statusTitle">Verifying Identity...</h3>
+        <p class="info-text" id="statusMessage">Please wait while we complete verification</p>
+        
+        <div class="verification-details hidden" id="verificationDetails">
+          <div class="detail-row">
+            <span class="detail-label">ID Verification</span>
+            <span class="detail-value success-text" id="idStatus">✓ Verified</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Face Match</span>
+            <span class="detail-value success-text" id="faceStatus">✓ Matched</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Processing Time</span>
+            <span class="detail-value" id="processingTime">2.3s</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Name</span>
+            <span class="detail-value" id="userName">-</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary hidden" id="doneBtn">Go to Dashboard</button>
+        <button class="btn btn-primary hidden" id="retryBtn">Try Again</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+let startTime;
+let uploadedFile = null;
+let stream = null;
+let capturedSelfie = null;
+
+// Upload handling
+const uploadArea = document.getElementById('uploadArea');
+const idUpload = document.getElementById('idUpload');
+const uploadBtn = document.getElementById('uploadBtn');
+const fileName = document.getElementById('fileName');
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  uploadArea.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+  uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+  uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
+});
+
+uploadArea.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  if (files.length) {
+    idUpload.files = files;
+    handleFileSelect();
+  }
+}
+
+idUpload.addEventListener('change', handleFileSelect);
+
+function handleFileSelect() {
+  const file = idUpload.files[0];
+  if (file) {
+    uploadedFile = file;
+    fileName.textContent = `✓ ${file.name}`;
+    fileName.classList.remove('hidden');
+    uploadBtn.disabled = false;
+  }
+}
+
+uploadBtn.addEventListener('click', () => {
+  if (uploadedFile) {
+    nextStep();
+    simulateIDVerification();
+  }
+});
+
+// Step navigation
+function nextStep() {
+  if (currentStep < 4) {
+    document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+    document.querySelector(`[data-step="${currentStep}"]`).classList.add('completed');
+    
+    document.getElementById(`step${currentStep}`).classList.remove('active');
+    currentStep++;
+    document.getElementById(`step${currentStep}`).classList.add('active');
+    document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+  }
+}
+
+// Simulate ID verification (realistic timing)
+function simulateIDVerification() {
+  startTime = Date.now();
+  const progressBar = document.getElementById('progressBar');
+  const processingText = document.getElementById('processingText');
+  
+  const steps = [
+    { progress: 20, text: 'Reading ID document...', delay: 300 },
+    { progress: 40, text: 'Extracting ID number...', delay: 400 },
+    { progress: 60, text: 'Connecting to Home Affairs...', delay: 300 },
+    { progress: 80, text: 'Verifying with database...', delay: 500 },
+    { progress: 100, text: 'ID verification complete!', delay: 300 }
+  ];
+
+  let currentStepIndex = 0;
+
+  function runStep() {
+    if (currentStepIndex < steps.length) {
+      const step = steps[currentStepIndex];
+      progressBar.style.width = step.progress + '%';
+      processingText.textContent = step.text;
+      
+      currentStepIndex++;
+      setTimeout(runStep, step.delay);
+    } else {
+      setTimeout(() => {
+        nextStep();
+        startWebcam();
+      }, 400);
+    }
+  }
+
+  runStep();
+}
+
+// Webcam handling
+async function startWebcam() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ 
+      video: { 
+        width: 1280, 
+        height: 720,
+        facingMode: 'user'
+      } 
+    });
+    document.getElementById('webcam').srcObject = stream;
+  } catch (err) {
+    alert('Camera access required for face verification. Please allow camera access.');
+  }
+}
+
+document.getElementById('captureBtn').addEventListener('click', () => {
+  captureSelfie();
+  
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+  
+  nextStep();
+  performFinalVerification();
+});
+
+function captureSelfie() {
+  const video = document.getElementById('webcam');
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+  
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0);
+  
+  capturedSelfie = canvas.toDataURL('image/jpeg', 0.8);
+}
+
+// Perform final verification with backend
+async function performFinalVerification() {
+  const statusIcon = document.getElementById('statusIcon');
+  const statusTitle = document.getElementById('statusTitle');
+  const statusMessage = document.getElementById('statusMessage');
+  const verificationDetails = document.getElementById('verificationDetails');
+  const doneBtn = document.getElementById('doneBtn');
+
+  try {
+    const formData = new FormData();
+    formData.append('idDocument', uploadedFile);
+    formData.append('selfie', capturedSelfie.split(',')[1]); // Remove data:image/jpeg;base64,
+
+    const response = await fetch('/api/verify-instant', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      const endTime = Date.now();
+      const processingTime = ((endTime - startTime) / 1000).toFixed(1);
+      
+      statusIcon.textContent = '✅';
+      statusTitle.textContent = 'Verification Successful!';
+      statusMessage.textContent = 'Your identity has been verified';
+      statusMessage.className = 'info-text success-text';
+      
+      document.getElementById('processingTime').textContent = processingTime + 's';
+      document.getElementById('userName').textContent = `${result.user.firstName} ${result.user.lastName}`;
+      
+      verificationDetails.classList.remove('hidden');
+      doneBtn.classList.remove('hidden');
+      
+      document.querySelector(`[data-step="4"]`).classList.add('completed');
+    } else {
+      throw new Error(result.error || 'Verification failed');
+    }
+
+  } catch (error) {
+    statusIcon.textContent = '❌';
+    statusTitle.textContent = 'Verification Failed';
+    statusMessage.textContent = error.message;
+    statusMessage.className = 'info-text error-text';
+    
+    document.getElementById('retryBtn').classList.remove('hidden');
+  }
+}
+
+document.getElementById('doneBtn').addEventListener('click', () => {
+  window.location.href = '/dashboard';
+});
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  window.location.reload();
+});
+</script>
+
+</body>
+</html>
